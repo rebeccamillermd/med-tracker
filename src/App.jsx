@@ -363,26 +363,25 @@ export default function App() {
 
   // Load from storage
   useEffect(() => {
-    async function load() {
-      try {
-        const result = await window.storage.get(STORAGE_KEY);
-        if (result && result.value) {
-          setData(JSON.parse(result.value));
-        } else {
-          setData(defaultData);
-        }
-      } catch {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setData(JSON.parse(saved));
+      } else {
         setData(defaultData);
       }
-      setLoaded(true);
+    } catch {
+      setData(defaultData);
     }
-    load();
+    setLoaded(true);
   }, []);
 
   // Save to storage whenever data changes
   useEffect(() => {
     if (!loaded || !data) return;
-    window.storage.set(STORAGE_KEY, JSON.stringify(data)).catch(() => {});
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {}
   }, [data, loaded]);
 
   const saveMed = useCallback((med) => {
